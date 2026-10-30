@@ -3,9 +3,9 @@ using Godot;
 namespace AIFarm;
 
 /// <summary>
-/// Slowly spins this node around the Y axis. Parent a camera to it to orbit a scene.
+/// Slowly spins this node around its Y axis, like a display turntable.
 /// </summary>
-public partial class OrbitPivot : Node3D
+public partial class Turntable : Node3D
 {
 	[Export]
 	public float DegreesPerSecond { get; set; } = 4f;

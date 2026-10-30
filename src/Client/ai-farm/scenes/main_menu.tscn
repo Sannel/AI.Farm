@@ -1,7 +1,7 @@
 [gd_scene load_steps=20 format=3]
 
 [ext_resource type="Script" path="res://scripts/MainMenu.cs" id="1_menu"]
-[ext_resource type="Script" path="res://scripts/OrbitPivot.cs" id="2_orbit"]
+[ext_resource type="Script" path="res://scripts/Turntable.cs" id="2_turntable"]
 [ext_resource type="PackedScene" path="res://assets/kaykit_forest/Hill_12x12x4_Color1.gltf" id="3_hill_12x12x4"]
 [ext_resource type="PackedScene" path="res://assets/kaykit_forest/Tree_1_A_Color1.gltf" id="4_tree_1_a"]
 [ext_resource type="PackedScene" path="res://assets/kaykit_forest/Tree_2_A_Color1.gltf" id="5_tree_2_a"]
@@ -55,21 +55,21 @@ light_energy = 1.3
 shadow_enabled = true
 directional_shadow_max_distance = 60.0
 
-[node name="CameraPivot" type="Node3D" parent="."]
-script = ExtResource("2_orbit")
+[node name="CameraRig" type="Node3D" parent="."]
 
-[node name="RimLight" type="DirectionalLight3D" parent="CameraPivot"]
+[node name="RimLight" type="DirectionalLight3D" parent="CameraRig"]
 transform = Transform3D(-1, 0, 0, 0, 0.9063, 0.4226, 0, 0.4226, -0.9063, 0, 10, 0)
 light_color = Color(0.62, 0.55, 1, 1)
 light_energy = 0.8
 
-[node name="Camera3D" type="Camera3D" parent="CameraPivot"]
+[node name="Camera3D" type="Camera3D" parent="CameraRig"]
 transform = Transform3D(1, 0, 0, 0, 0.9701, 0.2425, 0, -0.2425, 0.9701, 0, 8, 32)
 h_offset = -6.5
 current = true
 fov = 40.0
 
 [node name="Island" type="Node3D" parent="."]
+script = ExtResource("2_turntable")
 
 [node name="Hill" parent="Island" instance=ExtResource("3_hill_12x12x4")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
@@ -218,10 +218,10 @@ anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = -420.0
-offset_top = -44.0
-offset_right = -20.0
-offset_bottom = -16.0
+offset_left = -600.0
+offset_top = -56.0
+offset_right = -24.0
+offset_bottom = -20.0
 grow_horizontal = 0
 grow_vertical = 0
 theme_type_variation = &"CreditLabel"

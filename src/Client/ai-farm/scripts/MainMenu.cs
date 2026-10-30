@@ -7,14 +7,16 @@ namespace AIFarm;
 /// </summary>
 public partial class MainMenu : Control
 {
-	[Signal]
-	public delegate void ConnectRequestedEventHandler();
+	private const string GameScene = "res://scenes/game.tscn";
 
 	private Button _connectButton = null!;
 	private Button _exitButton = null!;
 
 	public override void _Ready()
 	{
+		// Returning from the game leaves the mouse captured.
+		Input.MouseMode = Input.MouseModeEnum.Visible;
+
 		_connectButton = GetNode<Button>("%ConnectButton");
 		_exitButton = GetNode<Button>("%ExitButton");
 
@@ -26,9 +28,8 @@ public partial class MainMenu : Control
 
 	private void OnConnectPressed()
 	{
-		// TODO: open the server connection flow once the networking layer exists.
-		GD.Print("Connect pressed");
-		EmitSignal(SignalName.ConnectRequested);
+		// TODO: connect to the C# server before entering the game once networking exists.
+		GetTree().ChangeSceneToFile(GameScene);
 	}
 
 	private void OnExitPressed()

@@ -1,0 +1,5 @@
+<Solution>
+  <Folder Name="/Client/">
+    <Project Path="src/Client/ai-farm/AI Farm.csproj" />
+  </Folder>
+</Solution>

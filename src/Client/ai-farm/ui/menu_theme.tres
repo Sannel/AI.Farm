@@ -135,6 +135,93 @@ shadow_color = Color(0, 0, 0, 0.25)
 shadow_size = 16
 shadow_offset = Vector2(0, 8)
 
+[sub_resource type="StyleBoxFlat" id="toggle_off"]
+content_margin_left = 24.0
+content_margin_top = 8.0
+content_margin_right = 24.0
+content_margin_bottom = 12.0
+bg_color = Color(0.79, 0.7, 0.58, 1)
+border_width_left = 4
+border_width_top = 4
+border_width_right = 4
+border_width_bottom = 10
+border_color = Color(0.48, 0.3, 0.2, 1)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+
+[sub_resource type="StyleBoxFlat" id="toggle_off_hover"]
+content_margin_left = 24.0
+content_margin_top = 8.0
+content_margin_right = 24.0
+content_margin_bottom = 12.0
+bg_color = Color(0.86, 0.78, 0.67, 1)
+border_width_left = 4
+border_width_top = 4
+border_width_right = 4
+border_width_bottom = 10
+border_color = Color(0.48, 0.3, 0.2, 1)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+
+[sub_resource type="StyleBoxFlat" id="toggle_on"]
+content_margin_left = 24.0
+content_margin_top = 8.0
+content_margin_right = 24.0
+content_margin_bottom = 12.0
+bg_color = Color(0.4, 0.74, 0.22, 1)
+border_width_left = 4
+border_width_top = 4
+border_width_right = 4
+border_width_bottom = 10
+border_color = Color(0.11, 0.33, 0.13, 1)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+
+[sub_resource type="StyleBoxFlat" id="toggle_on_hover"]
+content_margin_left = 24.0
+content_margin_top = 8.0
+content_margin_right = 24.0
+content_margin_bottom = 12.0
+bg_color = Color(0.52, 0.83, 0.3, 1)
+border_width_left = 4
+border_width_top = 4
+border_width_right = 4
+border_width_bottom = 10
+border_color = Color(0.11, 0.33, 0.13, 1)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+
+[sub_resource type="StyleBoxFlat" id="popup_panel"]
+content_margin_left = 8.0
+content_margin_top = 8.0
+content_margin_right = 8.0
+content_margin_bottom = 8.0
+bg_color = Color(1, 0.96, 0.89, 1)
+border_width_left = 4
+border_width_top = 4
+border_width_right = 4
+border_width_bottom = 4
+border_color = Color(0.48, 0.3, 0.2, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[sub_resource type="StyleBoxFlat" id="popup_hover"]
+bg_color = Color(0.4, 0.74, 0.22, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
 [resource]
 default_font = ExtResource("1_font")
 default_font_size = 24
@@ -145,6 +232,8 @@ Button/colors/font_pressed_color = Color(0.92, 0.97, 0.88, 1)
 Button/colors/font_outline_color = Color(0.11, 0.33, 0.13, 1)
 Button/constants/outline_size = 10
 Button/font_sizes/font_size = 40
+Button/colors/font_disabled_color = Color(1, 1, 1, 0.6)
+Button/styles/disabled = SubResource("toggle_off")
 Button/styles/focus = SubResource("btn_focus")
 Button/styles/hover = SubResource("btn_hover")
 Button/styles/normal = SubResource("btn_normal")
@@ -168,5 +257,25 @@ TitleLabel/font_sizes/font_size = 112
 CreditLabel/base_type = &"Label"
 CreditLabel/colors/font_color = Color(1, 1, 1, 0.85)
 CreditLabel/colors/font_outline_color = Color(0, 0, 0, 0.35)
-CreditLabel/constants/outline_size = 6
-CreditLabel/font_sizes/font_size = 18
+CreditLabel/constants/outline_size = 8
+CreditLabel/font_sizes/font_size = 26
+OptionButton/font_sizes/font_size = 28
+OptionButton/constants/outline_size = 8
+PopupMenu/colors/font_color = Color(0.36, 0.22, 0.14, 1)
+PopupMenu/colors/font_hover_color = Color(1, 1, 1, 1)
+PopupMenu/constants/v_separation = 12
+PopupMenu/constants/item_start_padding = 12
+PopupMenu/constants/item_end_padding = 12
+PopupMenu/font_sizes/font_size = 28
+PopupMenu/styles/hover = SubResource("popup_hover")
+PopupMenu/styles/panel = SubResource("popup_panel")
+SettingLabel/base_type = &"Label"
+SettingLabel/font_sizes/font_size = 34
+ToggleButton/base_type = &"Button"
+ToggleButton/colors/font_outline_color = Color(0.36, 0.22, 0.14, 1)
+ToggleButton/font_sizes/font_size = 30
+ToggleButton/styles/disabled = SubResource("toggle_off")
+ToggleButton/styles/hover = SubResource("toggle_off_hover")
+ToggleButton/styles/hover_pressed = SubResource("toggle_on_hover")
+ToggleButton/styles/normal = SubResource("toggle_off")
+ToggleButton/styles/pressed = SubResource("toggle_on")

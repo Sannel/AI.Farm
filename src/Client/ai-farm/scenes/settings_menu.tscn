@@ -1,0 +1,93 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/SettingsMenu.cs" id="1_settings"]
+
+[node name="SettingsMenu" type="VBoxContainer"]
+theme_override_constants/separation = 24
+script = ExtResource("1_settings")
+
+[node name="Title" type="Label" parent="."]
+layout_mode = 2
+theme_type_variation = &"TitleLabel"
+theme_override_font_sizes/font_size = 88
+text = "SETTINGS"
+horizontal_alignment = 1
+
+[node name="Panel" type="PanelContainer" parent="."]
+layout_mode = 2
+theme_type_variation = &"MenuPanel"
+
+[node name="Rows" type="VBoxContainer" parent="Panel"]
+layout_mode = 2
+theme_override_constants/separation = 32
+
+[node name="Grid" type="GridContainer" parent="Panel/Rows"]
+layout_mode = 2
+theme_override_constants/h_separation = 40
+theme_override_constants/v_separation = 18
+columns = 2
+
+[node name="ResolutionLabel" type="Label" parent="Panel/Rows/Grid"]
+layout_mode = 2
+theme_type_variation = &"SettingLabel"
+text = "Resolution"
+
+[node name="ResolutionOption" type="OptionButton" parent="Panel/Rows/Grid"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(460, 68)
+layout_mode = 2
+
+[node name="FullscreenLabel" type="Label" parent="Panel/Rows/Grid"]
+layout_mode = 2
+theme_type_variation = &"SettingLabel"
+text = "Fullscreen"
+
+[node name="FullscreenToggle" type="Button" parent="Panel/Rows/Grid"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(460, 68)
+layout_mode = 2
+theme_type_variation = &"ToggleButton"
+toggle_mode = true
+text = "Off"
+
+[node name="VSyncLabel" type="Label" parent="Panel/Rows/Grid"]
+layout_mode = 2
+theme_type_variation = &"SettingLabel"
+text = "VSync"
+
+[node name="VSyncToggle" type="Button" parent="Panel/Rows/Grid"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(460, 68)
+layout_mode = 2
+theme_type_variation = &"ToggleButton"
+toggle_mode = true
+text = "Off"
+
+[node name="FpsLabel" type="Label" parent="Panel/Rows/Grid"]
+layout_mode = 2
+theme_type_variation = &"SettingLabel"
+text = "Show FPS"
+
+[node name="FpsToggle" type="Button" parent="Panel/Rows/Grid"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(460, 68)
+layout_mode = 2
+theme_type_variation = &"ToggleButton"
+toggle_mode = true
+text = "Off"
+
+[node name="EmbeddedNote" type="Label" parent="Panel/Rows"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "Resolution and fullscreen are disabled while the game
+is embedded in the editor. Run it in its own window to use them."
+horizontal_alignment = 1
+
+[node name="BackButton" type="Button" parent="Panel/Rows"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(340, 84)
+layout_mode = 2
+size_flags_horizontal = 4
+text = "Back"
