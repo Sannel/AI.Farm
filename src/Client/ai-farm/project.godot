@@ -33,6 +33,11 @@ window/stretch/aspect="expand"
 project/assembly_name="AI Farm"
 project/solution_directory="../../.."
 
+[filesystem]
+
+; Source .blend files live next to their exported .glb; the game only uses the .glb.
+import/blender/enabled=false
+
 [input]
 
 move_forward={

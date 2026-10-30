@@ -263,6 +263,7 @@ OptionButton/font_sizes/font_size = 28
 OptionButton/constants/outline_size = 8
 PopupMenu/colors/font_color = Color(0.36, 0.22, 0.14, 1)
 PopupMenu/colors/font_hover_color = Color(1, 1, 1, 1)
+PopupMenu/colors/font_separator_color = Color(0.48, 0.3, 0.2, 1)
 PopupMenu/constants/v_separation = 12
 PopupMenu/constants/item_start_padding = 12
 PopupMenu/constants/item_end_padding = 12

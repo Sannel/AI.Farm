@@ -6,6 +6,10 @@
 [ext_resource type="Texture2D" path="res://assets/kaykit_forest/forest_texture.png" id="4_forest_tex"]
 [ext_resource type="Theme" path="res://ui/menu_theme.tres" id="5_theme"]
 [ext_resource type="PackedScene" path="res://scenes/settings_menu.tscn" id="6_settings"]
+[ext_resource type="PackedScene" path="res://assets/kaykit_farmers/Farmer_A.glb" id="7_farmer"]
+[ext_resource type="Script" path="res://scripts/Characters/CharacterAnimator.cs" id="8_animator"]
+[ext_resource type="Script" path="res://scripts/DebugTools/AnimationDebugMenu.cs" id="9_anim_debug"]
+[ext_resource type="PackedScene" path="res://assets/Sheep/Sheep.glb" id="10_sheep"]
 
 [sub_resource type="ProceduralSkyMaterial" id="sky_mat"]
 sky_top_color = Color(0.3, 0.58, 0.88, 1)
@@ -40,6 +44,13 @@ size = Vector2(400, 400)
 
 [sub_resource type="WorldBoundaryShape3D" id="ground_shape"]
 
+[sub_resource type="CapsuleShape3D" id="farmer_shape"]
+radius = 0.55
+height = 1.75
+
+[sub_resource type="BoxShape3D" id="sheep_shape"]
+size = Vector3(0.8, 0.85, 1.15)
+
 [sub_resource type="CapsuleShape3D" id="player_shape"]
 radius = 0.4
 height = 1.8
@@ -67,7 +78,35 @@ shape = SubResource("ground_shape")
 [node name="Valley" type="Node3D" parent="."]
 script = ExtResource("1_valley")
 
+[node name="Farmer" type="StaticBody3D" parent="."]
+
+[node name="Model" parent="Farmer" instance=ExtResource("7_farmer")]
+transform = Transform3D(0.75, 0, 0, 0, 0.75, 0, 0, 0, 0.75, 0, 0, 0)
+
+[node name="Animator" type="Node" parent="Farmer"]
+script = ExtResource("8_animator")
+
+[node name="Collision" type="CollisionShape3D" parent="Farmer"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.875, 0)
+shape = SubResource("farmer_shape")
+
+[node name="Sheep" type="StaticBody3D" parent="."]
+transform = Transform3D(0.866, 0, 0.5, 0, 1, 0, -0.5, 0, 0.866, 2.2, 0, 0.6)
+
+[node name="Model" parent="Sheep" instance=ExtResource("10_sheep")]
+transform = Transform3D(0.85, 0, 0, 0, 0.85, 0, 0, 0, 0.85, 0, 0, 0)
+
+[node name="Animator" type="Node" parent="Sheep"]
+script = ExtResource("8_animator")
+AnimationFolder = ""
+DefaultAnimation = "Idle"
+
+[node name="Collision" type="CollisionShape3D" parent="Sheep"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.425, -0.05)
+shape = SubResource("sheep_shape")
+
 [node name="Player" type="CharacterBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 6)
 script = ExtResource("2_player")
 
 [node name="Collision" type="CollisionShape3D" parent="Player"]
@@ -80,6 +119,39 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.6, 0)
 [node name="Camera3D" type="Camera3D" parent="Player/Head"]
 current = true
 fov = 70.0
+
+[node name="DebugLayer" type="CanvasLayer" parent="."]
+layer = 5
+
+[node name="AnimationDebugMenu" type="Control" parent="DebugLayer"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme = ExtResource("5_theme")
+script = ExtResource("9_anim_debug")
+
+[node name="Crosshair" type="Label" parent="DebugLayer/AnimationDebugMenu"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -26.0
+offset_right = 20.0
+offset_bottom = 26.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_type_variation = &"CreditLabel"
+theme_override_font_sizes/font_size = 40
+text = "+"
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="PauseLayer" type="CanvasLayer" parent="."]
 process_mode = 3
