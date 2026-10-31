@@ -1,0 +1,4 @@
+**/bin/
+**/obj/
+AIFarm.Server.Tests/
+.env

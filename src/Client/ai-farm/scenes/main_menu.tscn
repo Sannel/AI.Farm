@@ -191,6 +191,7 @@ text = "AI FARM"
 horizontal_alignment = 1
 
 [node name="Panel" type="PanelContainer" parent="UI/Menu/Margin/Column"]
+unique_name_in_owner = true
 layout_mode = 2
 theme_type_variation = &"MenuPanel"
 
@@ -210,6 +211,59 @@ custom_minimum_size = Vector2(340, 84)
 layout_mode = 2
 theme_type_variation = &"ExitButton"
 text = "Exit"
+
+[node name="ConnectPanel" type="PanelContainer" parent="UI/Menu/Margin/Column"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+theme_type_variation = &"MenuPanel"
+
+[node name="Fields" type="VBoxContainer" parent="UI/Menu/Margin/Column/ConnectPanel"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="ServerLabel" type="Label" parent="UI/Menu/Margin/Column/ConnectPanel/Fields"]
+layout_mode = 2
+text = "Server"
+
+[node name="ServerField" type="LineEdit" parent="UI/Menu/Margin/Column/ConnectPanel/Fields"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(340, 64)
+layout_mode = 2
+placeholder_text = "localhost:8080"
+select_all_on_focus = true
+
+[node name="NameLabel" type="Label" parent="UI/Menu/Margin/Column/ConnectPanel/Fields"]
+layout_mode = 2
+text = "Your name"
+
+[node name="NameField" type="LineEdit" parent="UI/Menu/Margin/Column/ConnectPanel/Fields"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(340, 64)
+layout_mode = 2
+placeholder_text = "Farmer"
+max_length = 32
+select_all_on_focus = true
+
+[node name="Status" type="Label" parent="UI/Menu/Margin/Column/ConnectPanel/Fields"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(340, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.62, 0.16, 0.12, 1)
+autowrap_mode = 3
+
+[node name="JoinButton" type="Button" parent="UI/Menu/Margin/Column/ConnectPanel/Fields"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(340, 84)
+layout_mode = 2
+text = "Join"
+
+[node name="BackButton" type="Button" parent="UI/Menu/Margin/Column/ConnectPanel/Fields"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(340, 84)
+layout_mode = 2
+theme_type_variation = &"ExitButton"
+text = "Back"
 
 [node name="Credit" type="Label" parent="UI/Menu"]
 layout_mode = 1

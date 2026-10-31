@@ -16,7 +16,7 @@ public static class RigAnimations
 		"Idle", "Walking", "Running", "Crawling", "Crouching", "Sneaking", "Blocking", "Aiming",
 		"Shooting", "Spellcasting", "Reeling", "Struggling", "Chopping", "Digging", "Hammering",
 		"Sawing", "Pickaxing", "Lockpicking", "Working", "Holding", "Push_Ups", "Sit_Ups",
-		"Cheering", "Waving", "Eating", "Sleeping",
+		"Cheering", "Waving", "Eating", "Sleeping", "Trotting", "Stalking",
 	];
 
 	private static readonly Dictionary<string, AnimationLibrary> Cache = [];

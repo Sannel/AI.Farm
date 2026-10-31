@@ -21,6 +21,7 @@ public partial class CharacterAnimator : Node
 	{
 		["Sit_Chair_Down"] = "Sit_Chair_Idle",
 		["Sit_Floor_Down"] = "Sit_Floor_Idle",
+		["Sit_Down"] = "Sit_Idle",
 		["Lie_Down"] = "Lie_Idle",
 		["Death_A"] = "Death_A_Pose",
 		["Death_B"] = "Death_B_Pose",
@@ -40,7 +41,7 @@ public partial class CharacterAnimator : Node
 
 	/// <summary>One-shots that end a sitting/lying state, so they return to the default animation.</summary>
 	private static readonly HashSet<string> ReturnToDefault =
-		["Sit_Chair_StandUp", "Sit_Floor_StandUp", "Lie_StandUp"];
+		["Sit_Chair_StandUp", "Sit_Floor_StandUp", "Sit_StandUp", "Lie_StandUp"];
 
 	/// <summary>The imported character model; its skeleton must match the animation rig.</summary>
 	[Export]
@@ -60,12 +61,24 @@ public partial class CharacterAnimator : Node
 
 	private AnimationPlayer? _player;
 	private string _baseAnimation = "";
+	private bool _droppingsDeposited;
 	private IReadOnlyList<(string Group, string[] Names)> _groups = [];
 
 	/// <summary>Every animation this character can play.</summary>
 	public string[] Animations => _player?.GetAnimationList() ?? [];
 
 	public string CurrentAnimation => _player?.CurrentAnimation ?? "";
+
+	public override void _PhysicsProcess(double delta)
+	{
+		if (_player is null || _player.CurrentAnimation != "Pooping" || _droppingsDeposited)
+			return;
+		if (_player.CurrentAnimationPosition >= _player.CurrentAnimationLength * 0.5)
+		{
+			_droppingsDeposited = true;
+			AnimalDroppings.Deposit(GetNode<Node3D>(ModelPath), GetParent<Node3D>());
+		}
+	}
 
 	/// <summary>Animations grouped by the rig file they came from, for menus.</summary>
 	public IReadOnlyList<(string Group, string[] Names)> AnimationGroups => _groups;
@@ -118,6 +131,7 @@ public partial class CharacterAnimator : Node
 		}
 
 		var alreadyPlaying = _player.CurrentAnimation == name;
+		if (name == "Pooping") _droppingsDeposited = false;
 		if (RigAnimations.IsLooping(name))
 		{
 			_baseAnimation = name;

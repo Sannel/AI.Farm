@@ -42,7 +42,7 @@ public partial class PauseMenu : Control
 			}
 			GetViewport().SetInputAsHandled();
 		}
-		else if (Visible && @event.IsActionPressed("ui_cancel"))
+		else if (Visible && (@event.IsActionPressed("ui_cancel") || @event.IsActionPressed("back")))
 		{
 			// The settings screen handles its own cancel first, so this only fires on the main pause view.
 			Resume();

@@ -3,8 +3,9 @@ using Godot;
 namespace AIFarm;
 
 /// <summary>
-/// Autoload that owns the player's display settings: loads them at startup, applies them,
-/// and saves every change to user://settings.cfg. Also draws the optional FPS counter.
+/// Autoload that owns the player's settings (display, and the server and name they last
+/// connected with): loads them at startup, applies them, and saves every change to
+/// user://settings.cfg. Also draws the optional FPS counter.
 /// </summary>
 public partial class GameSettings : Node
 {
@@ -33,6 +34,8 @@ public partial class GameSettings : Node
 	public bool Fullscreen { get; private set; }
 	public bool VSync { get; private set; } = true;
 	public bool ShowFps { get; private set; }
+	public string ServerAddress { get; private set; } = "localhost:8080";
+	public string PlayerName { get; private set; } = "";
 
 	private Label _fpsLabel = null!;
 	private double _fpsTimer;
@@ -92,6 +95,14 @@ public partial class GameSettings : Node
 	{
 		ShowFps = show;
 		ApplyShowFps();
+		Save();
+	}
+
+	/// <summary>Remembers the server and name used for the last successful connection.</summary>
+	public void SetConnection(string serverAddress, string playerName)
+	{
+		ServerAddress = serverAddress;
+		PlayerName = playerName;
 		Save();
 	}
 
@@ -168,6 +179,8 @@ public partial class GameSettings : Node
 		Fullscreen = (bool)config.GetValue("display", "fullscreen", Fullscreen);
 		VSync = (bool)config.GetValue("display", "vsync", VSync);
 		ShowFps = (bool)config.GetValue("debug", "show_fps", ShowFps);
+		ServerAddress = (string)config.GetValue("network", "server", ServerAddress);
+		PlayerName = (string)config.GetValue("network", "name", PlayerName);
 	}
 
 	private void Save()
@@ -178,6 +191,8 @@ public partial class GameSettings : Node
 		config.SetValue("display", "fullscreen", Fullscreen);
 		config.SetValue("display", "vsync", VSync);
 		config.SetValue("debug", "show_fps", ShowFps);
+		config.SetValue("network", "server", ServerAddress);
+		config.SetValue("network", "name", PlayerName);
 		config.Save(SettingsPath);
 	}
 

@@ -43,7 +43,7 @@ public partial class SettingsMenu : VBoxContainer
 
 	public override void _UnhandledInput(InputEvent @event)
 	{
-		if (Visible && @event.IsActionPressed("ui_cancel"))
+		if (Visible && (@event.IsActionPressed("ui_cancel") || @event.IsActionPressed("back")))
 		{
 			Close();
 			GetViewport().SetInputAsHandled();

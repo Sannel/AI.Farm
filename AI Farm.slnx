@@ -2,4 +2,9 @@
   <Folder Name="/Client/">
     <Project Path="src/Client/ai-farm/AI Farm.csproj" />
   </Folder>
+  <Folder Name="/Server/">
+    <Project Path="src/Server/AIFarm.Contracts/AIFarm.Contracts.csproj" />
+    <Project Path="src/Server/AIFarm.Server/AIFarm.Server.csproj" />
+    <Project Path="src/Server/AIFarm.Server.Tests/AIFarm.Server.Tests.csproj" />
+  </Folder>
 </Solution>

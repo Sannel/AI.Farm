@@ -1,15 +1,21 @@
-[gd_scene load_steps=14 format=3]
+[gd_scene load_steps=19 format=3]
 
 [ext_resource type="Script" path="res://scripts/World/WorldBuilder.cs" id="1_valley"]
 [ext_resource type="Script" path="res://scripts/PlayerController.cs" id="2_player"]
+[ext_resource type="Script" path="res://scripts/World/Terrain.cs" id="99_terrain"]
 [ext_resource type="Script" path="res://scripts/PauseMenu.cs" id="3_pause"]
-[ext_resource type="Texture2D" path="res://assets/kaykit_forest/forest_texture.png" id="4_forest_tex"]
 [ext_resource type="Theme" path="res://ui/menu_theme.tres" id="5_theme"]
 [ext_resource type="PackedScene" path="res://scenes/settings_menu.tscn" id="6_settings"]
 [ext_resource type="PackedScene" path="res://assets/kaykit_farmers/Farmer_A.glb" id="7_farmer"]
 [ext_resource type="Script" path="res://scripts/Characters/CharacterAnimator.cs" id="8_animator"]
 [ext_resource type="Script" path="res://scripts/DebugTools/AnimationDebugMenu.cs" id="9_anim_debug"]
 [ext_resource type="PackedScene" path="res://assets/Sheep/Sheep.glb" id="10_sheep"]
+[ext_resource type="PackedScene" path="res://assets/Dog/Dog.glb" id="11_dog"]
+[ext_resource type="PackedScene" path="res://assets/FarmHouse/FarmHouse.glb" id="12_farmhouse"]
+[ext_resource type="Script" path="res://scripts/Interaction/Door.cs" id="13_door"]
+[ext_resource type="Script" path="res://scripts/Characters/AnimalPen.cs" id="14_pen"]
+[ext_resource type="Script" path="res://scripts/Network/NetworkWorld.cs" id="15_network"]
+[ext_resource type="Script" path="res://scripts/Network/SpawnMenu.cs" id="16_spawn"]
 
 [sub_resource type="ProceduralSkyMaterial" id="sky_mat"]
 sky_top_color = Color(0.3, 0.58, 0.88, 1)
@@ -33,23 +39,15 @@ fog_light_color = Color(0.74, 0.86, 0.94, 1)
 fog_density = 0.004
 fog_sky_affect = 0.0
 
-[sub_resource type="StandardMaterial3D" id="ground_mat"]
-albedo_texture = ExtResource("4_forest_tex")
-uv1_scale = Vector3(0, 0, 0)
-uv1_offset = Vector3(0.035, 0.089, 0)
-
-[sub_resource type="PlaneMesh" id="ground_mesh"]
-material = SubResource("ground_mat")
-size = Vector2(400, 400)
-
-[sub_resource type="WorldBoundaryShape3D" id="ground_shape"]
-
 [sub_resource type="CapsuleShape3D" id="farmer_shape"]
 radius = 0.55
 height = 1.75
 
 [sub_resource type="BoxShape3D" id="sheep_shape"]
 size = Vector3(0.8, 0.85, 1.15)
+
+[sub_resource type="BoxShape3D" id="dog_shape"]
+size = Vector3(0.35, 0.6, 0.95)
 
 [sub_resource type="CapsuleShape3D" id="player_shape"]
 radius = 0.4
@@ -68,15 +66,16 @@ shadow_enabled = true
 directional_shadow_max_distance = 80.0
 
 [node name="Ground" type="StaticBody3D" parent="."]
-
-[node name="Mesh" type="MeshInstance3D" parent="Ground"]
-mesh = SubResource("ground_mesh")
-
-[node name="Collision" type="CollisionShape3D" parent="Ground"]
-shape = SubResource("ground_shape")
+script = ExtResource("99_terrain")
 
 [node name="Valley" type="Node3D" parent="."]
 script = ExtResource("1_valley")
+
+[node name="FarmHouse" parent="." instance=ExtResource("12_farmhouse")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -14)
+
+[node name="Door" type="StaticBody3D" parent="FarmHouse/FarmHouse/wall_doorway_door"]
+script = ExtResource("13_door")
 
 [node name="Farmer" type="StaticBody3D" parent="."]
 
@@ -105,6 +104,28 @@ DefaultAnimation = "Idle"
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.425, -0.05)
 shape = SubResource("sheep_shape")
 
+[node name="Dog" type="StaticBody3D" parent="."]
+transform = Transform3D(0.5, 0, -0.866, 0, 1, 0, 0.866, 0, 0.5, -1.8, 0, 1.4)
+
+[node name="Model" parent="Dog" instance=ExtResource("11_dog")]
+transform = Transform3D(0.8, 0, 0, 0, 0.8, 0, 0, 0, 0.8, 0, 0, 0)
+
+[node name="Animator" type="Node" parent="Dog"]
+script = ExtResource("8_animator")
+AnimationFolder = ""
+DefaultAnimation = "Idle"
+
+[node name="Collision" type="CollisionShape3D" parent="Dog"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.3, -0.05)
+shape = SubResource("dog_shape")
+
+[node name="AnimalPen" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.5, 0, -7)
+script = ExtResource("14_pen")
+PerRow = 4
+Gap = 1.5
+Models = PackedStringArray("res://assets/Cow/Cow_Female.glb", "res://assets/Cow/Cow_Male.glb", "res://assets/Pig/Pig_Female.glb", "res://assets/Pig/Pig_Male.glb", "res://assets/Chicken/Chicken_Female.glb", "res://assets/Chicken/Chicken_Male.glb", "res://assets/Goat/Goat_Female.glb", "res://assets/Goat/Goat_Male.glb", "res://assets/Horse/Horse_Female.glb", "res://assets/Horse/Horse_Male.glb", "res://assets/Donkey/Donkey_Female.glb", "res://assets/Donkey/Donkey_Male.glb", "res://assets/Sheep/Sheep_Female.glb", "res://assets/Sheep/Sheep_Male.glb", "res://assets/Dog/Dog_Female.glb", "res://assets/Dog/Dog_Male.glb", "res://assets/Monkey/Monkey_Female.glb", "res://assets/Monkey/Monkey_Male.glb", "res://assets/Gorilla/Gorilla_Female.glb", "res://assets/Gorilla/Gorilla_Male.glb", "res://assets/Orangutan/Orangutan_Female.glb", "res://assets/Orangutan/Orangutan_Male.glb", "res://assets/Poodle/Poodle_Female.glb", "res://assets/Poodle/Poodle_Male.glb", "res://assets/GuideDog/GuideDog_Female.glb", "res://assets/GuideDog/GuideDog_Male.glb", "res://assets/ServiceDog/ServiceDog_Female.glb", "res://assets/ServiceDog/ServiceDog_Male.glb", "res://assets/Wolf/Wolf_Female.glb", "res://assets/Wolf/Wolf_Male.glb", "res://assets/Fox/Fox_Female.glb", "res://assets/Fox/Fox_Male.glb", "res://assets/Raccoon/Raccoon_Female.glb", "res://assets/Raccoon/Raccoon_Male.glb", "res://assets/Cat/Cat_Female.glb", "res://assets/Cat/Cat_Male.glb", "res://assets/BlackCat/BlackCat_Female.glb", "res://assets/BlackCat/BlackCat_Male.glb", "res://assets/Lion/Lion_Female.glb", "res://assets/Lion/Lion_Male.glb", "res://assets/Tiger/Tiger_Female.glb", "res://assets/Tiger/Tiger_Male.glb", "res://assets/Leopard/Leopard_Female.glb", "res://assets/Leopard/Leopard_Male.glb", "res://assets/Unicorn/Unicorn_Female.glb", "res://assets/Unicorn/Unicorn_Male.glb", "res://assets/Zebra/Zebra_Female.glb", "res://assets/Zebra/Zebra_Male.glb", "res://assets/Deer/Deer_Female.glb", "res://assets/Deer/Deer_Male.glb", "res://assets/Moose/Moose_Female.glb", "res://assets/Moose/Moose_Male.glb", "res://assets/Bison/Bison_Female.glb", "res://assets/Bison/Bison_Male.glb", "res://assets/WaterBuffalo/WaterBuffalo_Female.glb", "res://assets/WaterBuffalo/WaterBuffalo_Male.glb", "res://assets/Boar/Boar_Female.glb", "res://assets/Boar/Boar_Male.glb", "res://assets/Camel/Camel_Female.glb", "res://assets/Camel/Camel_Male.glb", "res://assets/BactrianCamel/BactrianCamel_Female.glb", "res://assets/BactrianCamel/BactrianCamel_Male.glb", "res://assets/Llama/Llama_Female.glb", "res://assets/Llama/Llama_Male.glb", "res://assets/Giraffe/Giraffe_Female.glb", "res://assets/Giraffe/Giraffe_Male.glb", "res://assets/Elephant/Elephant_Female.glb", "res://assets/Elephant/Elephant_Male.glb", "res://assets/Mammoth/Mammoth_Female.glb", "res://assets/Mammoth/Mammoth_Male.glb", "res://assets/Rhino/Rhino_Female.glb", "res://assets/Rhino/Rhino_Male.glb", "res://assets/Hippo/Hippo_Female.glb", "res://assets/Hippo/Hippo_Male.glb", "res://assets/Mouse/Mouse_Female.glb", "res://assets/Mouse/Mouse_Male.glb", "res://assets/Rat/Rat_Female.glb", "res://assets/Rat/Rat_Male.glb", "res://assets/Hamster/Hamster_Female.glb", "res://assets/Hamster/Hamster_Male.glb", "res://assets/Rabbit/Rabbit_Female.glb", "res://assets/Rabbit/Rabbit_Male.glb", "res://assets/Chipmunk/Chipmunk_Female.glb", "res://assets/Chipmunk/Chipmunk_Male.glb", "res://assets/Beaver/Beaver_Female.glb", "res://assets/Beaver/Beaver_Male.glb", "res://assets/Hedgehog/Hedgehog_Female.glb", "res://assets/Hedgehog/Hedgehog_Male.glb", "res://assets/Bat/Bat_Female.glb", "res://assets/Bat/Bat_Male.glb", "res://assets/Bear/Bear_Female.glb", "res://assets/Bear/Bear_Male.glb", "res://assets/PolarBear/PolarBear_Female.glb", "res://assets/PolarBear/PolarBear_Male.glb", "res://assets/Koala/Koala_Female.glb", "res://assets/Koala/Koala_Male.glb", "res://assets/Panda/Panda_Female.glb", "res://assets/Panda/Panda_Male.glb", "res://assets/Sloth/Sloth_Female.glb", "res://assets/Sloth/Sloth_Male.glb", "res://assets/Otter/Otter_Female.glb", "res://assets/Otter/Otter_Male.glb", "res://assets/Skunk/Skunk_Female.glb", "res://assets/Skunk/Skunk_Male.glb", "res://assets/Kangaroo/Kangaroo_Female.glb", "res://assets/Kangaroo/Kangaroo_Male.glb", "res://assets/Badger/Badger_Female.glb", "res://assets/Badger/Badger_Male.glb", "res://assets/Turkey/Turkey_Female.glb", "res://assets/Turkey/Turkey_Male.glb")
+
 [node name="Player" type="CharacterBody3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 6)
 script = ExtResource("2_player")
@@ -119,6 +140,14 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.6, 0)
 [node name="Camera3D" type="Camera3D" parent="Player/Head"]
 current = true
 fov = 70.0
+
+[node name="InteractRay" type="RayCast3D" parent="Player/Head/Camera3D"]
+target_position = Vector3(0, 0, -2.5)
+collision_mask = 5
+
+[node name="NetworkWorld" type="Node3D" parent="."]
+script = ExtResource("15_network")
+ReplacedWhenOnline = Array[NodePath]([NodePath("../Farmer"), NodePath("../Sheep"), NodePath("../Dog"), NodePath("../AnimalPen")])
 
 [node name="DebugLayer" type="CanvasLayer" parent="."]
 layer = 5
@@ -152,6 +181,17 @@ theme_override_font_sizes/font_size = 40
 text = "+"
 horizontal_alignment = 1
 vertical_alignment = 1
+
+[node name="SpawnMenu" type="Control" parent="DebugLayer"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme = ExtResource("5_theme")
+script = ExtResource("16_spawn")
 
 [node name="PauseLayer" type="CanvasLayer" parent="."]
 process_mode = 3

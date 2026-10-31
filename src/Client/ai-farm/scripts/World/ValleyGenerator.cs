@@ -1,3 +1,4 @@
+using AIFarm.Contracts;
 using System.Collections.Generic;
 using Godot;
 
@@ -43,8 +44,16 @@ public sealed class ValleyGenerator
 
 	public int GrassCount { get; init; } = 3000;
 
+	/// <summary>Trees, rocks and grass keep this far (metres) from the river and lake.</summary>
+	private const float WaterMargin = 3f;
+
 	/// <summary>Keeps the spawn point clear of trees.</summary>
 	public float SpawnClearRadius { get; init; } = 10f;
+
+	/// <summary>
+	/// Ground kept free of trees, rocks and grass, as XZ rectangles: the farm house and its yard.
+	/// </summary>
+	public Rect2[] ClearAreas { get; init; } = [new(-6.5f, -19f, 13f, 10.5f)];
 
 	private readonly RandomNumberGenerator _rng = new();
 	private readonly float[] _wavePhases = new float[5];
@@ -158,7 +167,7 @@ public sealed class ValleyGenerator
 		while (placed.Count < PlainTreeCount && attempts++ < PlainTreeCount * 50)
 		{
 			var position = RandomPointOnPlain(SpawnClearRadius, PlainRadius - 6f);
-			if (placed.Exists(p => p.DistanceTo(position) < minSpacing))
+			if (InClearArea(position) || placed.Exists(p => p.DistanceTo(position) < minSpacing))
 			{
 				continue;
 			}
@@ -216,8 +225,28 @@ public sealed class ValleyGenerator
 	{
 		var yaw = _rng.Randf() * Mathf.Tau;
 		var scale = _rng.RandfRange(minScale, maxScale);
-		AddProp(model, position, yaw, Vector3.One * scale, castShadow);
+		// Skip after rolling yaw and scale, so clearing an area leaves the rest of the valley unchanged.
+		if (!InClearArea(position))
+		{
+			AddProp(model, position, yaw, Vector3.One * scale, castShadow);
+		}
 		return scale;
+	}
+
+	private bool InClearArea(Vector3 position)
+	{
+		if (WaterMap.DistanceToWater(position.X, position.Z) < WaterMargin)
+		{
+			return true;
+		}
+		foreach (var area in ClearAreas)
+		{
+			if (area.HasPoint(new Vector2(position.X, position.Z)))
+			{
+				return true;
+			}
+		}
+		return false;
 	}
 
 	private void AddProp(string model, Vector3 position, float yaw, Vector3 scale, bool castShadow)

@@ -1,2 +1,5 @@
 .directory
 *.blend1
+bin/
+obj/
+.env

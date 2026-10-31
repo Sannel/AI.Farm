@@ -1,0 +1,126 @@
+# AI Farm server stack. From src/Server run either
+#   docker compose up -d --build
+#   podman compose up -d --build
+# Settings come from .env next to this file (see .env.example).
+name: ai-farm
+
+services:
+  postgres:
+    image: docker.io/pgvector/pgvector:0.8.7-pg18
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: aifarm
+      POSTGRES_USER: aifarm
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-aifarm}
+    ports:
+      - "127.0.0.1:${POSTGRES_PORT:-5432}:5432" # local only, for running the server from an IDE
+    volumes:
+      - postgres-data:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U aifarm -d aifarm"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  # Runs the models (OpenAI-compatible API on port 11434): the embeddings for memories, and the
+  # brain that plays the NPCs. To use an Ollama elsewhere (e.g. one with a GPU), set OLLAMA_URL
+  # in .env; this one then just sits idle.
+  ollama:
+    image: docker.io/ollama/ollama:0.40.13
+    restart: unless-stopped
+    environment:
+      # Room for an NPC's persona, briefing and tools; and keep the brain loaded between turns.
+      OLLAMA_CONTEXT_LENGTH: ${OLLAMA_CONTEXT_LENGTH:-16384}
+      OLLAMA_KEEP_ALIVE: 30m
+    ports:
+      - "127.0.0.1:${OLLAMA_PORT:-11434}:11434" # local only, for running the server from an IDE
+    volumes:
+      - ollama-data:/root/.ollama
+    healthcheck:
+      test: ["CMD", "ollama", "list"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  # One-off: makes sure the embedding and brain models are on whichever Ollama is in use
+  # (quick once they're there).
+  ollama-pull:
+    image: docker.io/ollama/ollama:0.40.13
+    environment:
+      OLLAMA_HOST: ${OLLAMA_URL:-http://ollama:11434}
+    # (The brain model is only pulled when the brain runs on this Ollama, not on Azure or elsewhere.)
+    entrypoint:
+      - /bin/sh
+      - -c
+      - >-
+        ollama pull ${EMBEDDING_MODEL:-nomic-embed-text} &&
+        { [ -n "${BRAIN_ENDPOINT:-}" ] || [ "${BRAIN_PROVIDER:-OpenAiCompatible}" != OpenAiCompatible ] ||
+        ollama pull ${BRAIN_MODEL:-gemma4:e4b}; }
+    depends_on:
+      ollama:
+        condition: service_healthy
+    restart: "no"
+
+  # One-off: downloads the voice model the NPCs speak with (Kokoro-82M v1.0, ~350 MB) into a volume.
+  voice-model:
+    image: docker.io/library/alpine:3.24.3
+    volumes:
+      - voice-models:/models
+    entrypoint:
+      - /bin/sh
+      - -c
+      - >-
+        [ -f /models/${VOICE_MODEL:-kokoro-multi-lang-v1_0}/tokens.txt ] ||
+        wget -qO- https://github.com/k2-fsa/sherpa-onnx/releases/download/tts-models/${VOICE_MODEL:-kokoro-multi-lang-v1_0}.tar.bz2
+        | tar xj -C /models
+    restart: "no"
+
+  server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: localhost/ai-farm-server:latest
+    restart: unless-stopped
+    ports:
+      - "${SERVER_PORT:-8080}:8080"
+    environment:
+      ConnectionStrings__Farm: Host=postgres;Database=aifarm;Username=aifarm;Password=${POSTGRES_PASSWORD:-aifarm}
+      Embeddings__Endpoint: ${OLLAMA_URL:-http://ollama:11434}/v1
+      Embeddings__Model: ${EMBEDDING_MODEL:-nomic-embed-text}
+      Security__ApiKey: ${AIFARM_API_KEY:-}
+      # The brain that plays the NPCs (Claude the farmer): any model with tool calling, on Ollama
+      # (the default) or deployed in Azure AI Foundry (BRAIN_PROVIDER=AzureFoundry; see .env.example).
+      Brain__Enabled: ${BRAIN_ENABLED:-true}
+      Brain__Provider: ${BRAIN_PROVIDER:-OpenAiCompatible}
+      Brain__Endpoint: ${BRAIN_ENDPOINT:-${OLLAMA_URL:-http://ollama:11434}/v1}
+      Brain__Api: ${BRAIN_API:-}
+      Brain__Model: ${BRAIN_MODEL:-gemma4:e4b}
+      Brain__ApiKey: ${BRAIN_API_KEY-ollama}
+      Brain__Temperature: ${BRAIN_TEMPERATURE-0.6}
+      # Azure sign-in with Entra ID (when BRAIN_API_KEY is empty): a service principal, if set.
+      AZURE_TENANT_ID:
+      AZURE_CLIENT_ID:
+      AZURE_CLIENT_SECRET:
+      Brain__Interval: ${BRAIN_INTERVAL:-00:01:00}
+      # Each NPC's memory file holds this many characters; what it knows about each player, a third
+      # of that, and the files of players within this many metres are in its briefing.
+      Brain__MemoryFileSize: ${BRAIN_MEMORY_SIZE:-4000}
+      Brain__PlayerMemoryRange: ${BRAIN_PLAYER_MEMORY_RANGE:-15}
+      # NPC voices: the Kokoro model folder (bubbles still work without one; VOICE_DIR= for text only).
+      Speech__ModelDir: ${VOICE_DIR-/models/${VOICE_MODEL:-kokoro-multi-lang-v1_0}}
+      Speech__SentencePauseMs: ${VOICE_SENTENCE_PAUSE_MS:-90}
+      Brain__TurnTimeout: ${BRAIN_TURN_TIMEOUT:-00:03:00}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      ollama-pull:
+        condition: service_completed_successfully
+      voice-model:
+        condition: service_completed_successfully
+    volumes:
+      - voice-models:/models:ro
+
+volumes:
+  postgres-data:
+  ollama-data:
+  voice-models:
